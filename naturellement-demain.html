@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Naturellement Demain – Parti Écologique</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+  --forest: #1a3d2b;
+  --moss: #2f6f4e;
+  --sage: #7dab8a;
+  --leaf: #b5d5a8;
+  --sky: #c8e8f0;
+  --ocean: #1b4f72;
+  --cream: #f7f4ee;
+  --gold: #c9a84c;
+  --text: #1a1a1a;
+  --white: #ffffff;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--cream);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* ── CURSOR ── */
+.cursor {
+  width: 16px; height: 16px;
+  background: var(--gold);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: multiply;
+  transition: transform 0.15s ease, width 0.3s, height 0.3s;
+  transform: translate(-50%, -50%);
+}
+.cursor.hover { width: 36px; height: 36px; opacity: 0.5; }
+
+/* ── LOADER ── */
+#loader {
+  position: fixed; inset: 0;
+  background: var(--forest);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9998;
+  transition: opacity 0.8s ease, visibility 0.8s ease;
+}
+#loader.hidden { opacity: 0; visibility: hidden; }
+.loader-text {
+  font-family: 'Playfair Display', serif;
+  color: var(--leaf);
+  font-size: 2rem;
+  letter-spacing: 0.3em;
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:0.3} 50%{opacity:1} }
+
+/* ── NAVBAR ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 18px 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: background 0.4s, backdrop-filter 0.4s, box-shadow 0.4s;
+}
+nav.scrolled {
+  background: rgba(26, 61, 43, 0.95);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 30px rgba(0,0,0,0.2);
+}
+.nav-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  color: var(--white);
+  text-decoration: none;
+  display: flex; align-items: center; gap: 10px;
+  opacity: 0; animation: fadeIn 1s 0.5s forwards;
+}
+.nav-logo .leaf-icon { font-size: 1.8rem; }
+.nav-links { display: flex; gap: 35px; opacity: 0; animation: fadeIn 1s 0.7s forwards; }
+.nav-links a {
+  color: rgba(255,255,255,0.85);
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  position: relative;
+  transition: color 0.3s;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute; bottom: -3px; left: 0; right: 0;
+  height: 1px; background: var(--gold);
+  transform: scaleX(0); transition: transform 0.3s;
+}
+.nav-links a:hover { color: var(--white); }
+.nav-links a:hover::after { transform: scaleX(1); }
+.nav-cta {
+  background: var(--gold);
+  color: var(--forest) !important;
+  padding: 9px 20px;
+  border-radius: 50px;
+  font-weight: 600 !important;
+  transition: transform 0.2s, background 0.3s !important;
+}
+.nav-cta:hover { transform: scale(1.05); background: #e0b85a !important; }
+.nav-cta::after { display: none !important; }
+
+/* ── HERO ── */
+#hero {
+  min-height: 100vh;
+  background: linear-gradient(160deg, var(--forest) 0%, #0f2d1c 60%, var(--ocean) 100%);
+  position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(125,171,138,0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(27,79,114,0.2) 0%, transparent 40%),
+    radial-gradient(circle at 60% 80%, rgba(181,213,168,0.1) 0%, transparent 35%);
+}
+.particles { position: absolute; inset: 0; overflow: hidden; }
+.particle {
+  position: absolute;
+  width: 3px; height: 3px;
+  background: var(--leaf);
+  border-radius: 50%;
+  opacity: 0;
+  animation: float linear infinite;
+}
+@keyframes float {
+  0% { transform: translateY(100vh) rotate(0); opacity: 0; }
+  10% { opacity: 0.7; }
+  90% { opacity: 0.5; }
+  100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+}
+.hero-content {
+  position: relative; z-index: 1;
+  text-align: center;
+  padding: 0 20px;
+  max-width: 900px;
+}
+.hero-badge {
+  display: inline-block;
+  background: rgba(181,213,168,0.15);
+  border: 1px solid rgba(181,213,168,0.4);
+  color: var(--leaf);
+  font-size: 0.78rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 8px 20px;
+  border-radius: 50px;
+  margin-bottom: 28px;
+  opacity: 0; animation: slideUp 0.8s 1.2s forwards;
+}
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(3rem, 8vw, 7rem);
+  line-height: 1.05;
+  color: var(--white);
+  margin-bottom: 24px;
+  opacity: 0; animation: slideUp 0.8s 1.4s forwards;
+}
+.hero-title em {
+  font-style: italic;
+  color: var(--leaf);
+  display: block;
+}
+.hero-subtitle {
+  font-size: 1.15rem;
+  color: rgba(255,255,255,0.65);
+  max-width: 550px;
+  margin: 0 auto 48px;
+  line-height: 1.7;
+  font-weight: 300;
+  opacity: 0; animation: slideUp 0.8s 1.6s forwards;
+}
+.hero-btns {
+  display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+  opacity: 0; animation: slideUp 0.8s 1.8s forwards;
+}
+.btn-primary {
+  background: var(--gold);
+  color: var(--forest);
+  padding: 16px 36px;
+  border-radius: 50px;
+  font-weight: 600; font-size: 0.95rem;
+  text-decoration: none;
+  transition: transform 0.3s, box-shadow 0.3s;
+  box-shadow: 0 8px 30px rgba(201,168,76,0.4);
+}
+.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(201,168,76,0.5); }
+.btn-secondary {
+  background: rgba(255,255,255,0.1);
+  color: var(--white);
+  padding: 16px 36px;
+  border-radius: 50px;
+  font-weight: 400; font-size: 0.95rem;
+  text-decoration: none;
+  border: 1px solid rgba(255,255,255,0.25);
+  transition: background 0.3s, border 0.3s;
+}
+.btn-secondary:hover { background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.5); }
+.hero-scroll {
+  position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  color: rgba(255,255,255,0.4);
+  font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase;
+  animation: bounce 2s infinite;
+}
+.scroll-arrow { font-size: 1.2rem; }
+@keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(8px)} }
+
+/* ── STATS STRIP ── */
+.stats-strip {
+  background: var(--forest);
+  padding: 40px 60px;
+  display: flex; justify-content: center; gap: 80px; flex-wrap: wrap;
+}
+.stat {
+  text-align: center; color: var(--white);
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 0.6s, transform 0.6s;
+}
+.stat.visible { opacity: 1; transform: none; }
+.stat-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.8rem; color: var(--gold);
+  display: block; line-height: 1;
+}
+.stat-label { font-size: 0.85rem; color: rgba(255,255,255,0.55); margin-top: 5px; letter-spacing: 0.05em; }
+
+/* ── SECTION GENERIC ── */
+.section {
+  padding: 110px 60px;
+  max-width: 1300px;
+  margin: auto;
+}
+.section-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--sage);
+  margin-bottom: 16px;
+  display: block;
+}
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  color: var(--forest);
+  line-height: 1.2;
+  max-width: 600px;
+}
+.section-title em { font-style: italic; color: var(--moss); }
+
+/* ── MISSION ── */
+#mission { background: var(--white); padding: 110px 60px; }
+.mission-inner {
+  max-width: 1300px; margin: auto;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+}
+.mission-visual {
+  position: relative; border-radius: 24px; overflow: hidden;
+  height: 520px;
+}
+.mission-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+.mission-visual:hover .mission-img { transform: scale(1.04); }
+.mission-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(26,61,43,0.7) 0%, transparent 50%);
+}
+.mission-badge-img {
+  position: absolute; bottom: 28px; left: 28px;
+  background: var(--gold);
+  color: var(--forest);
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-family: 'Playfair Display', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+.mission-text { padding-right: 20px; }
+.mission-text p {
+  font-size: 1.1rem; line-height: 1.8;
+  color: rgba(26,26,26,0.75);
+  margin-top: 28px; font-weight: 300;
+}
+.mission-pillars {
+  display: flex; flex-direction: column; gap: 16px; margin-top: 40px;
+}
+.pillar {
+  display: flex; align-items: center; gap: 16px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(47,111,78,0.15);
+  background: var(--cream);
+  transition: border-color 0.3s, background 0.3s, transform 0.3s;
+  cursor: default;
+}
+.pillar:hover { border-color: var(--sage); background: var(--leaf) + '22'; transform: translateX(8px); }
+.pillar-icon { font-size: 1.5rem; }
+.pillar-text strong { display: block; color: var(--forest); font-size: 0.95rem; }
+.pillar-text span { font-size: 0.82rem; color: rgba(0,0,0,0.5); }
+
+/* ── IDEAUX / CARDS ── */
+#ideaux { padding: 110px 60px; max-width: 1300px; margin: auto; }
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 60px;
+}
+.value-card {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 36px 32px;
+  border: 1px solid rgba(47,111,78,0.1);
+  position: relative; overflow: hidden;
+  transition: transform 0.4s, box-shadow 0.4s;
+  cursor: pointer;
+  opacity: 0; transform: translateY(30px);
+  transition: opacity 0.6s, transform 0.6s, box-shadow 0.4s;
+}
+.value-card.visible { opacity: 1; transform: translateY(0); }
+.value-card:hover { transform: translateY(-8px); box-shadow: 0 20px 50px rgba(47,111,78,0.15); }
+.value-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--moss), var(--gold));
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.4s;
+}
+.value-card:hover::before { transform: scaleX(1); }
+.card-icon-big { font-size: 2.8rem; margin-bottom: 20px; }
+.value-card h3 {
+  font-family: 'Playfair Display', serif;
+  color: var(--forest); font-size: 1.3rem; margin-bottom: 12px;
+}
+.value-card p { font-size: 0.92rem; color: rgba(26,26,26,0.65); line-height: 1.7; }
+.card-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 20px;
+  color: var(--moss); font-size: 0.85rem; font-weight: 600;
+  text-decoration: none;
+  transition: gap 0.3s;
+}
+.card-link:hover { gap: 12px; }
+
+/* ── ACTIONS ── */
+#actions {
+  background: var(--forest);
+  padding: 110px 60px;
+  position: relative; overflow: hidden;
+}
+#actions::before {
+  content: '';
+  position: absolute; top: -200px; right: -200px;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(125,171,138,0.12) 0%, transparent 70%);
+}
+.actions-inner { max-width: 1300px; margin: auto; }
+#actions .section-title { color: var(--white); max-width: 500px; }
+#actions .section-label { color: var(--sage); }
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px; margin-top: 60px;
+}
+.action-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  padding: 32px 28px;
+  transition: background 0.3s, border-color 0.3s, transform 0.3s;
+  cursor: pointer;
+  opacity: 0; transform: translateY(30px);
+}
+.action-card.visible { opacity: 1; transform: translateY(0); }
+.action-card:hover {
+  background: rgba(125,171,138,0.15);
+  border-color: rgba(125,171,138,0.4);
+  transform: translateY(-6px);
+}
+.action-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem; color: rgba(255,255,255,0.08);
+  line-height: 1; margin-bottom: 8px;
+}
+.action-icon { font-size: 2rem; margin-bottom: 16px; }
+.action-card h3 { color: var(--leaf); font-family: 'Playfair Display', serif; font-size: 1.15rem; margin-bottom: 12px; }
+.action-card p { color: rgba(255,255,255,0.55); font-size: 0.88rem; line-height: 1.7; }
+.action-tag {
+  display: inline-block;
+  margin-top: 16px;
+  background: rgba(201,168,76,0.2);
+  color: var(--gold);
+  padding: 5px 14px;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+/* ── VALEURS ── */
+#valeurs {
+  padding: 110px 60px;
+  max-width: 1300px; margin: auto;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: center;
+}
+.valeurs-img {
+  position: relative;
+  height: 500px; border-radius: 24px; overflow: hidden;
+}
+.valeurs-img img { width: 100%; height: 100%; object-fit: cover; }
+.valeurs-img-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(47,111,78,0.3), rgba(27,79,114,0.3));
+}
+.valeurs-content {}
+.valeurs-list {
+  list-style: none;
+  margin-top: 40px; display: flex; flex-direction: column; gap: 12px;
+}
+.valeurs-list li {
+  display: flex; align-items: center; gap: 16px;
+  padding: 18px 24px;
+  background: var(--white);
+  border-radius: 14px;
+  font-size: 0.95rem;
+  color: var(--forest);
+  font-weight: 500;
+  border: 1px solid rgba(47,111,78,0.12);
+  transition: transform 0.3s, border-color 0.3s, background 0.3s;
+  cursor: default;
+  opacity: 0; transform: translateX(20px);
+}
+.valeurs-list li.visible { opacity: 1; transform: translateX(0); }
+.valeurs-list li:hover {
+  transform: translateX(8px);
+  border-color: var(--sage);
+  background: linear-gradient(135deg, var(--white), #f0f8f2);
+}
+.valeurs-list .check {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, var(--moss), var(--sage));
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 0.8rem; flex-shrink: 0;
+}
+
+/* ── CTA BANNER ── */
+#cta-section {
+  background: linear-gradient(135deg, var(--gold) 0%, #e0b85a 100%);
+  padding: 90px 60px;
+  text-align: center;
+  position: relative; overflow: hidden;
+}
+#cta-section::before {
+  content: '🌿';
+  position: absolute; font-size: 20rem; opacity: 0.06;
+  top: -40px; right: -60px;
+}
+.cta-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  color: var(--forest);
+  margin-bottom: 16px;
+}
+.cta-sub { color: rgba(26,61,43,0.7); font-size: 1.05rem; margin-bottom: 40px; }
+.cta-form {
+  display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+  max-width: 500px; margin: auto;
+}
+.cta-input {
+  flex: 1; min-width: 220px;
+  padding: 16px 22px;
+  border-radius: 50px;
+  border: none;
+  font-size: 0.95rem;
+  outline: none;
+  font-family: 'DM Sans', sans-serif;
+  background: rgba(255,255,255,0.9);
+  transition: background 0.3s;
+}
+.cta-input:focus { background: white; }
+.cta-btn {
+  background: var(--forest);
+  color: var(--white);
+  padding: 16px 32px;
+  border-radius: 50px;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.3s, transform 0.3s;
+}
+.cta-btn:hover { background: #0f2d1c; transform: scale(1.05); }
+.cta-note { margin-top: 16px; font-size: 0.8rem; color: rgba(26,61,43,0.5); }
+
+/* ── CONTACT ── */
+#contact {
+  padding: 110px 60px;
+  max-width: 1300px; margin: auto;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start;
+}
+.contact-info {}
+.contact-info p { color: rgba(26,26,26,0.65); line-height: 1.8; font-size: 1rem; margin-top: 24px; font-weight: 300; }
+.contact-items { margin-top: 36px; display: flex; flex-direction: column; gap: 18px; }
+.contact-item {
+  display: flex; align-items: center; gap: 16px;
+  color: var(--forest); font-size: 0.95rem;
+}
+.contact-item-icon {
+  width: 44px; height: 44px;
+  background: var(--leaf);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+}
+.social-links { display: flex; gap: 12px; margin-top: 36px; }
+.social-link {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(47,111,78,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+  text-decoration: none;
+  transition: background 0.3s, border-color 0.3s, transform 0.3s;
+}
+.social-link:hover { background: var(--forest); border-color: var(--forest); transform: translateY(-4px); }
+.contact-form-card {
+  background: var(--white);
+  padding: 48px 40px;
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(47,111,78,0.1);
+  border: 1px solid rgba(47,111,78,0.08);
+}
+.form-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem; color: var(--forest); margin-bottom: 28px;
+}
+.form-group { margin-bottom: 18px; }
+.form-label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--moss); margin-bottom: 7px; letter-spacing: 0.05em; }
+.form-control {
+  width: 100%;
+  padding: 13px 16px;
+  border: 1px solid rgba(47,111,78,0.2);
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  outline: none;
+  background: var(--cream);
+  transition: border-color 0.3s, background 0.3s;
+}
+.form-control:focus { border-color: var(--moss); background: var(--white); }
+textarea.form-control { resize: vertical; min-height: 110px; }
+.form-submit {
+  width: 100%;
+  background: var(--forest);
+  color: white;
+  padding: 15px;
+  border: none; border-radius: 50px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem; font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+  margin-top: 8px;
+}
+.form-submit:hover { background: var(--moss); transform: translateY(-2px); }
+
+/* ── FOOTER ── */
+footer {
+  background: #0d2118;
+  padding: 70px 60px 36px;
+  color: rgba(255,255,255,0.5);
+}
+.footer-inner {
+  max-width: 1300px; margin: auto;
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 60px;
+  padding-bottom: 50px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.footer-brand-name {
+  font-family: 'Playfair Display', serif;
+  color: var(--white); font-size: 1.4rem; margin-bottom: 14px;
+}
+.footer-desc { font-size: 0.85rem; line-height: 1.8; }
+.footer-col h4 { color: var(--white); font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 20px; }
+.footer-col a {
+  display: block; color: rgba(255,255,255,0.45);
+  text-decoration: none; font-size: 0.88rem; margin-bottom: 10px;
+  transition: color 0.3s;
+}
+.footer-col a:hover { color: var(--leaf); }
+.footer-bottom {
+  max-width: 1300px; margin: 28px auto 0;
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 0.82rem;
+}
+.footer-bottom a { color: rgba(255,255,255,0.35); text-decoration: none; }
+.footer-bottom a:hover { color: var(--leaf); }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(8px);
+  z-index: 500;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+}
+.modal-overlay.open { opacity: 1; visibility: visible; }
+.modal {
+  background: var(--white);
+  border-radius: 24px;
+  padding: 48px;
+  max-width: 520px; width: 90%;
+  position: relative;
+  transform: translateY(30px) scale(0.95);
+  transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+.modal-overlay.open .modal { transform: translateY(0) scale(1); }
+.modal-close {
+  position: absolute; top: 20px; right: 20px;
+  background: var(--cream); border: none; border-radius: 50%;
+  width: 36px; height: 36px; cursor: pointer; font-size: 1.1rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.3s;
+}
+.modal-close:hover { background: var(--leaf); }
+.modal-icon { font-size: 3rem; margin-bottom: 16px; }
+.modal-title { font-family: 'Playfair Display', serif; color: var(--forest); font-size: 1.6rem; margin-bottom: 14px; }
+.modal-body { color: rgba(26,26,26,0.65); line-height: 1.8; font-size: 0.95rem; }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+@keyframes slideUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── SCROLL REVEAL ── */
+.reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.7s, transform 0.7s; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  nav { padding: 16px 24px; }
+  .nav-links { display: none; }
+  .mission-inner, #valeurs, #contact { grid-template-columns: 1fr; gap: 50px; }
+  .cards-grid { grid-template-columns: 1fr; }
+  .footer-inner { grid-template-columns: 1fr 1fr; gap: 40px; }
+  .section { padding: 70px 24px; }
+  #mission, #actions, #cta-section { padding: 70px 24px; }
+  .stats-strip { padding: 40px 24px; gap: 40px; }
+  footer { padding: 50px 24px 30px; }
+  #contact { padding: 70px 24px; }
+  #ideaux { padding: 70px 24px; }
+  #valeurs { padding: 70px 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-text">Alliance Économique Nationale</div>
+</div>
+
+<!-- CURSOR -->
+<div class="cursor" id="cursor"></div>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <a href="#hero" class="nav-logo">
+    <span class="leaf-icon"></span>
+    Alliance Économique Nationale (AEcoN)
+  </a>
+  <div class="nav-links">
+    <a href="#mission">Mission</a>
+    <a href="#ideaux">Idéaux</a>
+    <a href="#actions">Actions</a>
+    <a href="#valeurs">Valeurs</a>
+    <a href="#contact">Contact</a>
+    <a href="#cta-section" class="nav-cta">Rejoindre</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="particles" id="particles"></div>
+  <div class="hero-content">
+    <div class="hero-badge">🌍 Fondé le 22 avril 2024 — Jour de la Terre</div>
+    <h1 class="hero-title">
+      L'écologie au cœur<br>de <em>chaque décision</em>
+    </h1>
+    <p class="hero-subtitle">
+      Construire une société juste, solidaire et respectueuse du vivant. 
+      Ensemble, nous pouvons changer les règles du jeu.
+    </p>
+    <div class="hero-btns">
+      <a href="#actions" class="btn-primary">Découvrir nos actions →</a>
+      <a href="#mission" class="btn-secondary">Notre mission</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <span>Défiler</span>
+    <span class="scroll-arrow">↓</span>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-strip">
+  <div class="stat">
+    <span class="stat-num" data-count="12400">0</span>
+    <span class="stat-label">Membres engagés</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num" data-count="68">0</span>
+    <span class="stat-label">Régions couvertes</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num">2040</span>
+    <span class="stat-label">Sortie des fossiles</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num" data-count="30">0</span>
+    <span class="stat-label">% terres protégées</span>
+  </div>
+</div>
+
+<!-- MISSION -->
+<section id="mission">
+  <div class="mission-inner">
+    <div class="mission-visual">
+      <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80" 
+           alt="Forêt verte luxuriante" class="mission-img">
+      <div class="mission-overlay"></div>
+      <div class="mission-badge-img">Fondé en 2024 </div>
+    </div>
+    <div class="mission-text">
+      <span class="section-label">Qui sommes-nous</span>
+      <h2 class="section-title">Une mission, <em>un avenir</em> commun</h2>
+      <p>Naturellement Demain est né d'une conviction simple : la planète ne peut plus attendre. Nous sommes un parti politique ancré dans la réalité, porté par des citoyens, pour des citoyens.</p>
+      <div class="mission-pillars">
+        <div class="pillar">
+          <span class="pillar-icon">🤝</span>
+          <div class="pillar-text">
+            <strong>Solidarité et équité</strong>
+            <span>Une transition juste pour tous les citoyens</span>
+          </div>
+        </div>
+        <div class="pillar">
+          <span class="pillar-icon">🗳️</span>
+          <div class="pillar-text">
+            <strong>Démocratie participative</strong>
+            <span>Chaque voix compte dans nos décisions</span>
+          </div>
+        </div>
+        <div class="pillar">
+          <span class="pillar-icon">💡</span>
+          <div class="pillar-text">
+            <strong>Innovation verte</strong>
+            <span>Des solutions concrètes et scientifiques</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- IDEAUX -->
+<section id="ideaux">
+  <span class="section-label reveal">Ce en quoi nous croyons</span>
+  <h2 class="section-title reveal">Nos idéaux pour <em>demain</em></h2>
+  <div class="cards-grid">
+
+   <div class="value-card" data-modal="durable">
+    <div class="card-icon-big">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/Rotating_globe.gif" 
+             alt="Globe Terre" 
+             style="width:64px; height:64px;">
+    </div>
+    <h3>Un monde durable</h3>
+    <p>L'humain vit en harmonie avec la nature. Nous défendons une vision où la croissance économique respecte les limites planétaires.</p>
+    <a class="card-link" href="#">En savoir plus →</a>
+</div>
+  <div class="value-card" data-modal="justice">
+    <div class="card-icon-big">
+        <img src="https://media2.giphy.com/media/v1.Y2lkPTZjMDliOTUyb3BtdzFzaWxtcG9oYnJlNW9teXA5bm1pMzBucnBzZWw3NjFmMWIyYiZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/ZdHPeStjQdMhdLhw4X/200.gif" 
+             alt="Icône justice" 
+             style="width:69px; height:69px;">
+    </div>
+    <h3>Justice et solidarité</h3>
+    <p>Équité et respect du vivant dans toutes nos actions. La transition écologique doit être sociale avant tout.</p>
+    <a class="card-link" href="#">En savoir plus →</a>
+</div>
+
+<div class="value-card" data-modal="courage">
+    <div class="card-icon-big">
+        <img src="https://cdn-icons-gif.flaticon.com/14122/14122705.gif" 
+             alt="Icône courage" 
+             style="width:78px; height:78px;">
+    </div>
+    <h3>Transparence et courage</h3>
+    <p>Agir maintenant, avec honnêteté et détermination. Nous ne cédons pas aux lobbies. La vérité scientifique guide nos positions.</p>
+    <a class="card-link" href="#">En savoir plus →</a>
+</div>
+
+  </div>
+</section>
+
+<!-- ACTIONS -->
+<section id="actions">
+  <div class="actions-inner">
+    <span class="section-label">Ce que nous proposons</span>
+    <h2 class="section-title">Nos idées <em>concrètes</em></h2>
+    <div class="actions-grid">
+
+     <div class="action-card" data-modal="energie">
+    <div class="action-num">01</div>
+    <div class="action-icon"><i class="fas fa-bolt energy"></i></div>
+    <h3>Énergie propre pour tous</h3>
+    <p>Investir massivement dans les renouvelables et sortir des énergies fossiles d'ici 2040.</p>
+    <span class="action-tag">Priorité nationale</span>
+</div>
+
+<div class="action-card" data-modal="transport">
+    <div class="action-num">02</div>
+    <div class="action-icon"><i class="fas fa-bicycle transport"></i></div>
+    <h3>Transports durables</h3>
+    <p>Transports en commun gratuits, pistes cyclables sécurisées et mobilités douces partout en France.</p>
+    <span class="action-tag">Mobilité</span>
+</div>
+
+<div class="action-card" data-modal="biodiv">
+    <div class="action-num">03</div>
+    <div class="action-icon"><i class="fas fa-leaf biodiversity"></i></div>
+    <h3>Protéger la biodiversité</h3>
+    <p>Protéger 30% des terres et océans, reboiser et lutter contre l'extinction des espèces.</p>
+    <span class="action-tag">Nature</span>
+</div>
+
+<div class="action-card" data-modal="conso">
+    <div class="action-num">04</div>
+    <div class="action-icon"><i class="fas fa-seedling consumption"></i></div>
+    <h3>Consommer mieux</h3>
+    <p>Agriculture locale, bio et équitable. Zéro déchet comme objectif national d'ici 2035.</p>
+    <span class="action-tag">Alimentation</span>
+</div>
+
+<div class="action-card" data-modal="social">
+    <div class="action-num">05</div>
+    <div class="action-icon"><i class="fas fa-house social"></i></div>
+    <h3>Justice sociale et écologique</h3>
+    <p>Emploi vert, logement économique, alimentation saine — personne n'est laissé de côté.</p>
+     <span class="action-tag">Solidarité</span>
+</div>
+
+<!-- CSS pour les couleurs -->
+<style>
+.action-icon i {
+    font-size: 40px;
+}
+
+/* Couleurs par thème */
+.energy {
+    color: #f1c40f; /* Jaune pour énergie, rappel de l'électricité */
+}
+
+.transport {
+    color: #3498db; /* Bleu pour mobilité et transport */
+}
+
+.biodiversity {
+    color: #27ae60; /* Vert pour nature et biodiversité */
+}
+
+.consumption {
+    color: #e67e22; /* Orange pour alimentation et agriculture */
+}
+
+.social {
+    color: #e74c3c; /* Rouge pour justice sociale */
+}
+</style>
+       
+
+    </div>
+  </div>
+</section>
+
+<!-- VALEURS -->
+<section id="valeurs">
+  <div class="valeurs-img reveal">
+    <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80" alt="Nature préservée">
+    <div class="valeurs-img-overlay"></div>
+  </div>
+  <div class="valeurs-content">
+    <span class="section-label reveal">Nos principes directeurs</span>
+    <h2 class="section-title reveal">Les valeurs qui <em>nous guident</em></h2>
+    <ul class="valeurs-list">
+      <li><span class="check">✓</span> Le respect du vivant</li>
+      <li><span class="check">✓</span> La solidarité et l'équité</li>
+      <li><span class="check">✓</span> La démocratie participative</li>
+      <li><span class="check">✓</span> La transparence et l'honnêteté</li>
+      <li><span class="check">✓</span> Le courage d'agir maintenant</li>
+    </ul>
+  </div>
+</section>
+
+<!-- CTA BANNER -->
+<section id="cta-section">
+  <h2 class="cta-title">Rejoignez le mouvement</h2>
+  <p class="cta-sub">Plus de 12 400 citoyens ont déjà signé. Soyez le prochain.</p>
+  <div class="cta-form">
+    <input type="email" class="cta-input" placeholder="Votre adresse email…">
+    <button class="cta-btn" onclick="handleSignup()">Je m'engage ✨</button>
+  </div>
+  <p class="cta-note">Gratuit, sans spam. Vous pouvez vous désinscrire à tout moment.</p>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-info">
+    <span class="section-label reveal">Parlons-nous</span>
+    <h2 class="section-title reveal">Contactez <em>notre équipe</em></h2>
+    <p>Une question, une idée, envie de vous impliquer ? Notre équipe est disponible et répond sous 48 heures.</p>
+    <div class="contact-items">
+      <div class="contact-item">
+        <div class="contact-item-icon">📧</div>
+        <span>contact@naturellementdemain.org</span>
+      </div>
+      <div class="contact-item">
+        <div class="contact-item-icon">📞</div>
+        <span>01 23 45 67 89</span>
+      </div>
+      <div class="contact-item">
+        <div class="contact-item-icon">📍</div>
+        <span>12 Allée des Chênes, 75001 Paris</span>
+      </div>
+    </div>
+    <div class="social-links">
+ <a class="social-link" href="https://www.facebook.com/ecologie-ses-reel-tkt" title="Facebook" target="_blank">
+    <i class="fab fa-facebook-f" style="color: #4249d0;"></i>
+</a>
+
+<a class="social-link" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" title="Instagram" target="_blank">
+    <i class="fab fa-instagram" style="color: #13141b;"></i>
+</a>
+
+<a class="social-link" href="https://www.youtube.com/shorts/BxvMJUVL1os" title="Twitter / X" target="_blank">
+    <i class="fab fa-twitter" style="color: #13a8ff;"></i>
+</a>
+<a class="social-link" href="https://www.youtube.com/@Cazozozop" title="YouTube" target="_blank">
+    <i class="fab fa-youtube" style="color: #FF0000;"></i>
+</a>
+
+    </div>
+  </div>
+  <div class="contact-form-card reveal">
+    <div class="form-title">Envoyez-nous un message</div>
+    <div class="form-group">
+      <label class="form-label">Nom complet</label>
+      <input type="text" class="form-control" placeholder="Jean Martin">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input type="email" class="form-control" placeholder="jean@exemple.fr">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Objet</label>
+      <input type="text" class="form-control" placeholder="Sujet de votre message">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Message</label>
+      <textarea class="form-control" placeholder="Votre message…"></textarea>
+    </div>
+    <button class="form-submit" onclick="handleContact()">Envoyer le message →</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+<div class="footer-brand-name">
+    <img src="https://static.vecteezy.com/system/resources/thumbnails/021/656/044/small/green-leaf-logo-free-png.png" 
+         alt="Logo Naturellement Demain" 
+         style="width:32px; height:22px; vertical-align:middle; margin-right:8px;">
+    Naturellement Demain
+</div>
+      <p class="footer-desc">Parti écologique fondé le 22 avril 2024. Pour une société juste, solidaire et respectueuse du vivant.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Navigation</h4>
+      <a href="#mission">Notre mission</a>
+      <a href="#ideaux">Nos idéaux</a>
+      <a href="#actions">Actions</a>
+      <a href="#valeurs">Valeurs</a>
+    </div>
+    <div class="footer-col">
+      <h4>Nous rejoindre</h4>
+      <a href="#">Adhérer</a>
+      <a href="#">Faire un don</a>
+      <a href="#">Bénévolat</a>
+      <a href="#">Presse</a>
+    </div>
+    <div class="footer-col">
+      <h4>Légal</h4>
+      <a href="#">Mentions légales</a>
+      <a href="#">Confidentialité</a>
+      <a href="#">CGU</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2024 Naturellement Demain. Tous droits réservés.</span>
+    <a href="#">↑ Retour en haut</a>
+  </div>
+</footer>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-icon" id="modal-icon"></div>
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" style="position:fixed;bottom:30px;right:30px;background:var(--forest);color:white;padding:16px 24px;border-radius:14px;font-size:0.9rem;transform:translateY(100px);opacity:0;transition:all 0.4s;z-index:1000;box-shadow:0 10px 30px rgba(0,0,0,0.3);">
+  ✅ <span id="toast-msg"></span>
+</div>
+
+<script>
+// ── LOADER ──
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('loader').classList.add('hidden');
+  }, 1200);
+});
+
+// ── CUSTOM CURSOR ──
+const cursor = document.getElementById('cursor');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top = e.clientY + 'px';
+});
+document.querySelectorAll('a, button, .value-card, .action-card, .pillar').forEach(el => {
+  el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+  el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+});
+
+// ── NAVBAR SCROLL ──
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 60);
+});
+
+// ── PARTICLES ──
+const particlesContainer = document.getElementById('particles');
+for (let i = 0; i < 30; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  p.style.left = Math.random() * 100 + '%';
+  p.style.animationDelay = Math.random() * 15 + 's';
+  p.style.animationDuration = (10 + Math.random() * 20) + 's';
+  p.style.width = p.style.height = (2 + Math.random() * 4) + 'px';
+  particlesContainer.appendChild(p);
+}
+
+// ── SCROLL OBSERVER ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), i * 100);
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.reveal, .stat, .value-card, .action-card, .valeurs-list li').forEach(el => {
+  observer.observe(el);
+});
+
+// ── COUNT UP ──
+const countObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const el = entry.target.querySelector('.stat-num[data-count]');
+      if (el && !el.dataset.animated) {
+        el.dataset.animated = 'true';
+        const target = +el.dataset.count;
+        const duration = 1800;
+        const step = target / (duration / 16);
+        let current = 0;
+        const update = () => {
+          current = Math.min(current + step, target);
+          el.textContent = Math.floor(current).toLocaleString('fr-FR');
+          if (current < target) requestAnimationFrame(update);
+        };
+        update();
+      }
+    }
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('.stat').forEach(s => countObserver.observe(s));
+
+// ── MODAL DATA ──
+const modals = {
+  durable: { icon: '🌍', title: 'Un monde durable', body: 'Nous défendons un modèle économique qui respecte les limites planétaires. La croissance ne doit plus se faire au détriment de l\'environnement. Nous proposons des indicateurs de progrès alternatifs au PIB, incluant le bien-être humain et la santé des écosystèmes.' },
+  justice: { icon: '⚖️', title: 'Justice et solidarité', body: 'La transition écologique doit être sociale avant tout. Pas question de laisser les plus vulnérables payer le coût du changement. Nous défendons des politiques redistributives, une fiscalité verte progressive et des aides directes aux ménages modestes.' },
+  courage: { icon: '☢️', title: 'Transparence et courage', body: 'Nos positions sont fondées sur la science et l\'intérêt général. Chaque décision prise par le parti est documentée et accessible à tous les citoyens en temps réel.' },
+  energie: { icon: '⚡', title: 'Énergie propre pour tous', body: 'Notre plan énergétique prévoit 100 milliards d\'euros d\'investissement sur 10 ans dans l\'éolien, le solaire et la géothermie. Un tarif social de l\'énergie garantira que personne ne se retrouve sans électricité, quelle que soit sa situation.' },
+  transport: { icon: '🚲', title: 'Transports durables', body: 'Gratuité des transports en commun pour les moins de 25 ans et les revenus modestes. 20 000 km de pistes cyclables sécurisées en 5 ans. Un plan vélo national avec des aides à l\'achat de vélos électriques pour tous.' },
+  biodiv: { icon: '🦋', title: 'Protéger la biodiversité', body: 'Création de 50 nouvelles réserves naturelles. Interdiction des pesticides les plus nocifs d\'ici 2027. Programme de reforestation de 2 millions d\'hectares avec des espèces locales adaptées au changement climatique.' },
+  conso: { icon: '🌾', title: 'Consommer mieux', body: 'Soutien à 10 000 fermes agroécologiques sur 5 ans. Obligation d\'affichage environnemental sur tous les produits. Interdiction progressive du plastique à usage unique et développement d\'une économie circulaire réelle.' },
+  social: { icon: '🏠', title: 'Justice sociale et écologique', body: 'Création de 200 000 emplois verts dans la rénovation thermique, les énergies renouvelables et l\'agriculture durable. Un revenu de transition pour accompagner les travailleurs des secteurs polluants vers de nouveaux métiers.' },
+};
+
+function openModal(key) {
+  const data = modals[key];
+  if (!data) return;
+  document.getElementById('modal-icon').textContent = data.icon;
+  document.getElementById('modal-title').textContent = data.title;
+  document.getElementById('modal-body').textContent = data.body;
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e) {
+  if (e && e.target !== document.getElementById('modal-overlay') && !e.target.classList.contains('modal-close')) return;
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.querySelectorAll('[data-modal]').forEach(el => {
+  el.addEventListener('click', (e) => {
+    e.preventDefault();
+    openModal(el.dataset.modal);
+  });
+});
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal({}); });
+
+// ── TOAST ──
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  toast.style.transform = 'translateY(0)';
+  toast.style.opacity = '1';
+  setTimeout(() => { toast.style.transform = 'translateY(100px)'; toast.style.opacity = '0'; }, 3500);
+}
+
+function handleSignup() {
+  const input = document.querySelector('.cta-input');
+  if (input.value && input.value.includes('@')) {
+    showToast('Bienvenue dans le mouvement ! 🌿');
+    input.value = '';
+  } else {
+    showToast('Veuillez entrer une adresse email valide.');
+  }
+}
+
+function handleContact() {
+  showToast('Message envoyé ! Nous vous répondrons sous 48h. 💚');
+}
+
+// ── SMOOTH SCROLL ──
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+  link.addEventListener('click', function(e) {
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+  });
+});
+
+// ── STAGGERED CARD DELAYS ──
+document.querySelectorAll('.value-card').forEach((card, i) => card.style.transitionDelay = `${i * 0.12}s`);
+document.querySelectorAll('.action-card').forEach((card, i) => card.style.transitionDelay = `${i * 0.1}s`);
+document.querySelectorAll('.valeurs-list li').forEach((li, i) => li.style.transitionDelay = `${i * 0.1}s`);
+document.querySelectorAll('.stat').forEach((s, i) => s.style.transitionDelay = `${i * 0.1}s`);
+</script>
+</body>
+</html>
